@@ -102,7 +102,8 @@ Django project. Record unseen states, then propose a small verifiable improvemen
 
 ## New tooling contracts
 
-Six standalone tools use versioned JSON inputs, emit JSON reports, and run locally.
+Six standalone tools emit versioned JSON reports and run locally. Five read versioned
+JSON inputs; frame comparison reads images and optional mask rectangles.
 Each selected skill includes its own tools. There is no shared Python dependency
 that requires installing the entire pack.
 
