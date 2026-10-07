@@ -130,6 +130,19 @@ class Packaging(unittest.TestCase):
     def test_validator_accepts_pack(self):
         self.assertEqual(validator.validate(), [])
 
+    def test_validator_reports_non_object_manifests(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            plugin_dir = root / '.claude-plugin'
+            plugin_dir.mkdir()
+            (plugin_dir / 'marketplace.json').write_text('{}')
+            plugin = plugin_dir / 'plugin.json'
+            for malformed in ('[]', 'null'):
+                with self.subTest(manifest=malformed):
+                    plugin.write_text(malformed)
+                    errors = validator.validate(root)
+                    self.assertTrue(any(error.startswith('Invalid plugin packaging:') for error in errors))
+
     def test_native_manifests_agree(self):
         claude = json.loads((ROOT / '.claude-plugin/plugin.json').read_text())
         codex = json.loads((ROOT / '.codex-plugin/plugin.json').read_text())

@@ -56,7 +56,7 @@ def validate(root=ROOT):
             errors.append('Invalid Codex marketplace identity or source')
         if marketplace['name'] != plugin['name'] or marketplace['plugins'][0]['name'] != plugin['name']:
             errors.append('Marketplace identity mismatch')
-    except (OSError, ValueError, KeyError, IndexError) as error:
+    except (OSError, ValueError, TypeError, KeyError, IndexError) as error:
         errors.append('Invalid plugin packaging: ' + str(error))
     workflows = sorted(path.name for path in (root / '.github/workflows').glob('*.y*ml'))
     if workflows != ['release.yml']:

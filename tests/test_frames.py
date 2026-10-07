@@ -1,5 +1,6 @@
 import contextlib
 import io
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -105,6 +106,35 @@ class Frames(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(frames.main([str(path), str(path), '--heatmap', str(path)]), 2)
             self.assertEqual(path.read_bytes(), original)
+
+    def test_cli_refuses_hardlinked_heatmap_input(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            left, right, heat = (Path(tmp) / name for name in ('left.ppm', 'right.ppm', 'heat.ppm'))
+            left.write_bytes(b'P6\n1 1\n255\n\x00\x00\x00')
+            right.write_bytes(b'P6\n1 1\n255\n\xff\x00\x00')
+            try:
+                os.link(left, heat)
+            except (AttributeError, OSError) as error:
+                self.skipTest('Hard links are unavailable: %s' % error)
+            original = left.read_bytes()
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(frames.main([str(left), str(right), '--heatmap', str(heat)]), 2)
+            self.assertEqual(left.read_bytes(), original)
+
+    def test_cli_refuses_hardlinked_output_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            left, right, report, heat = (Path(tmp) / name for name in ('left.ppm', 'right.ppm', 'report.json', 'heat.ppm'))
+            left.write_bytes(b'P6\n1 1\n255\n\x00\x00\x00')
+            right.write_bytes(b'P6\n1 1\n255\n\xff\x00\x00')
+            report.write_text('preserve')
+            try:
+                os.link(report, heat)
+            except (AttributeError, OSError) as error:
+                self.skipTest('Hard links are unavailable: %s' % error)
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(frames.main([str(left), str(right), '--output', str(report), '--heatmap', str(heat)]), 2)
+            self.assertEqual(report.read_text(), 'preserve')
+            self.assertEqual(heat.read_text(), 'preserve')
 
     def test_optional_pillow_rgb_png(self):
         try:

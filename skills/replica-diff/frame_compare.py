@@ -150,6 +150,15 @@ def save_ppm(frame, path):
     Path(path).write_bytes(('P6\n%d %d\n255\n' % (frame.width, frame.height)).encode('ascii') + frame.rgb)
 
 
+def same_path(left, right):
+    if left == right:
+        return True
+    try:
+        return left.samefile(right)
+    except FileNotFoundError:
+        return False
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('reference', type=Path)
@@ -163,7 +172,9 @@ def main(argv=None):
     try:
         inputs = {path.resolve() for path in (args.reference, args.candidate, args.mask) if path}
         outputs = [path.resolve() for path in (args.output, args.heatmap) if path]
-        if inputs.intersection(outputs) or len(outputs) != len(set(outputs)):
+        if any(same_path(source, output) for source in inputs for output in outputs) or any(
+                same_path(outputs[left], outputs[right])
+                for left in range(len(outputs)) for right in range(left + 1, len(outputs))):
             raise ValueError('Outputs must be distinct and must not overwrite inputs.')
         masks = json.loads(args.mask.read_text(encoding='utf-8')) if args.mask else []
         report, heat = compare(load_frame(args.reference), load_frame(args.candidate), masks,

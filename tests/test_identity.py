@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -69,6 +70,15 @@ class Identity(unittest.TestCase):
         result = identity.audit(self.root, RULES)
         self.assertEqual(result['scanned_files'], 1)
         self.assertTrue(any(row['reason'] == 'symlink' for row in result['skipped']))
+
+    def test_non_regular_file_is_reported_without_reading(self):
+        if not hasattr(os, 'mkfifo'):
+            self.skipTest('Named pipes are unavailable on this platform.')
+        self.write('safe.txt', 'safe')
+        os.mkfifo(self.root / 'pipe.txt')
+        result = identity.audit(self.root, RULES)
+        self.assertEqual(result['scanned_files'], 1)
+        self.assertIn({'path': 'pipe.txt', 'reason': 'non-regular-file'}, result['skipped'])
 
     def test_missing_root_rejected(self):
         with self.assertRaises(ValueError):

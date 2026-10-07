@@ -51,7 +51,7 @@ transactions. Destination directories must not overlap the source skills tree. `
 Codex versions that provide `codex plugin` can install from the marketplace:
 
 ```bash
-codex plugin marketplace add warengonzaga/replicate-skills --ref main
+codex plugin marketplace add warengonzaga/replicate-skills --ref feature/replicate-skills
 codex plugin add replicate-skills@replicate-skills
 ```
 

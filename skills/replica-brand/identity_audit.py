@@ -54,6 +54,9 @@ def audit(root, rules, include_agent_config=False):
             if not selected(relative, include) or selected(relative, exclude):
                 skipped.append({'path': relative, 'reason': 'outside-selected-surfaces'})
                 continue
+            if not path.is_file():
+                skipped.append({'path': relative, 'reason': 'non-regular-file'})
+                continue
             raw = path.read_bytes()
             try:
                 text = raw.decode('utf-8')
