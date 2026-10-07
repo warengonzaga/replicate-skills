@@ -19,8 +19,10 @@ case and in short form (#06f matches #0066ff). File and folder names are
 checked as well as contents.
 
 Skipped: .git, node_modules, build output folders, lock files, binary files,
-and the replica/ planning folder (where the original's name belongs). Pass
+root agent configuration folders (.agents, .claude, .codex), and the replica/
+planning folder (where the original's name belongs). Pass
 --include-replica to check that too, for example if it sits inside public/.
+Use --include-agent-config when agent configuration is part of your distribution.
 """
 
 import argparse
@@ -32,6 +34,7 @@ import sys
 SKIP_DIRS = {".git", "node_modules", ".next", ".nuxt", ".svelte-kit", "dist", "build",
              "out", ".vercel", ".turbo", ".cache", "coverage", "__pycache__", ".venv",
              "venv", "Pods", ".expo", "DerivedData", ".gradle"}
+AGENT_CONFIG_DIRS = {".agents", ".claude", ".codex"}
 SKIP_FILES = {"package-lock.json", "yarn.lock", "pnpm-lock.yaml", "bun.lockb",
               "Podfile.lock", "Cargo.lock", "poetry.lock"}
 BINARY_EXT = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".icns", ".pdf", ".zip",
@@ -74,7 +77,8 @@ def is_binary(path):
         return True
 
 
-def sweep(root, avoid=(), domains=(), colors=(), include_replica=False, max_size=2_000_000):
+def sweep(root, avoid=(), domains=(), colors=(), include_replica=False, max_size=2_000_000,
+          include_agent_config=False):
     pats = build_patterns(avoid, domains)
     cols = {norm_hex(c) for c in colors if HEX.fullmatch(c.strip())}
     hits = []
@@ -84,6 +88,8 @@ def sweep(root, avoid=(), domains=(), colors=(), include_replica=False, max_size
         keep = []
         for d in dirnames:
             if d in SKIP_DIRS:
+                continue
+            if rel_dir == "." and d in AGENT_CONFIG_DIRS and not include_agent_config:
                 continue
             if d == "replica" and rel_dir == "." and not include_replica:
                 continue
@@ -149,6 +155,8 @@ def main(argv=None):
     ap.add_argument("--colors", default="", help="comma-separated hex colours")
     ap.add_argument("--config", help="JSON with avoid / domains / colors lists")
     ap.add_argument("--include-replica", action="store_true")
+    ap.add_argument("--include-agent-config", action="store_true",
+                    help="also scan root .agents, .claude, and .codex configuration")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
     avoid = [x for x in args.avoid.split(",") if x.strip()]
@@ -168,7 +176,8 @@ def main(argv=None):
         print("sweep: nothing to look for. Pass --avoid with the original app's name.",
               file=sys.stderr)
         return 2
-    hits = sweep(args.root, avoid, domains, colors, args.include_replica)
+    hits = sweep(args.root, avoid, domains, colors, args.include_replica,
+                 include_agent_config=args.include_agent_config)
     print(json.dumps(hits, indent=2) if args.json else render(hits))
     return 1 if hits else 0
 

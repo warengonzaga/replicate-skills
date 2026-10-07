@@ -13,7 +13,9 @@ The initial import commit contains the eleven skill folders, templates, helpers,
 tests, plugin metadata, and ignore rules. Our following commits add portable
 installation, a canonical skills/ layout, runtime-neutral instructions, evidence contracts, and a contribution
 workflow. The parity CLI also gains an explicit must-have release gate, with
-regression coverage; existing invocation behavior remains available. Existing skill names and artifact formats are retained.
+regression coverage; existing parity invocation behavior remains available.
+Brand sweep skips root agent configuration by default so installed skill examples
+do not block app deployment; --include-agent-config restores scanning when needed. Existing skill names and artifact formats are retained.
 
 ## Updating from upstream
 

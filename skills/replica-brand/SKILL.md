@@ -119,7 +119,9 @@ python3 "$SKILL_DIR/sweep.py" . --config replica/brand.json
 
 It searches file contents and file names for the original's name (also inside
 identifiers like `CalendlyEmbed`), domains and colours, skipping
-`node_modules`, build output and the `replica/` planning folder. Exit 1 means
+`node_modules`, build output, root agent configuration (.agents, .claude, .codex),
+and the `replica/` planning folder. Use `--include-agent-config` if those
+configuration folders ship in your product. Exit 1 means
 something is left. Fix until it says clean. Also check by eye: the favicon,
 the page titles, the email templates, the OG image, the app icon.
 

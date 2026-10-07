@@ -95,6 +95,7 @@ sequence is a suggestion, not an automatic agent pipeline.
 - Existing project stack, package manager, and prior user answers are respected.
 - Helper paths are resolved from the loaded skill rather than the runtime's home.
 - Completion and parity claims require demonstrated behavior; blocked checks stay visible.
+- Brand sweep excludes root agent configuration, with an opt-in for shipped configurations.
 - Deployment reuses existing authorization and records its source and rollback plan.
 - Conflicting installs are rejected; explicit updates are backed up and tested.
 

@@ -58,6 +58,27 @@ class Sweep(unittest.TestCase):
         self.assertNotIn(os.path.join("public", "logo.png"), files)
         self.assertNotIn(os.path.join("src", "app", "page.tsx"), files)
 
+    def test_root_agent_configuration_is_not_product_branding(self):
+        for folder in ['.agents', '.claude', '.codex']:
+            put(self.root, folder + '/skills/example/SKILL.md', 'Calendly example')
+        hits = self.run_sweep()
+        self.assertFalse(any(hit['file'].startswith(('.agents', '.claude', '.codex'))
+                             for hit in hits))
+        hits = self.run_sweep(include_agent_config=True)
+        for folder in ['.agents', '.claude', '.codex']:
+            self.assertTrue(any(hit['file'].startswith(folder) for hit in hits))
+        # A similarly named folder inside shipped assets must still be scanned.
+        put(self.root, 'public/.agents/guide.md', 'Calendly')
+        self.assertTrue(any(hit['file'].endswith('guide.md') for hit in self.run_sweep()))
+
+    def test_agent_configuration_cli_opt_in(self):
+        with tempfile.TemporaryDirectory() as root:
+            put(root, '.agents/skills/example/SKILL.md', 'Calendly example')
+            with redirect_stdout(io.StringIO()):
+                self.assertEqual(sweep.main([root, '--avoid', 'Calendly']), 0)
+                self.assertEqual(sweep.main([root, '--avoid', 'Calendly',
+                                             '--include-agent-config']), 1)
+
     def test_include_replica(self):
         files = {h["file"] for h in self.run_sweep(include_replica=True)}
         self.assertIn(os.path.join("replica", "recon.md"), files)
