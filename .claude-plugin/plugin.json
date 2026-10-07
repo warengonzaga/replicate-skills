@@ -1,22 +1,19 @@
 {
-  "name": "replica-skill",
-  "description": "Eleven free Claude skills that clone any app: reverse-engineer it, rebuild it, test it for bugs, then fix what its users hate. Free, MIT.",
-  "version": "1.0.0",
+  "name": "replicate-skills",
+  "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
+  "version": "0.1.0",
   "author": {
-    "name": "Jake Schincariol",
-    "url": "https://opusjake.ai"
+    "name": "Waren Gonzaga",
+    "url": "https://github.com/warengonzaga"
   },
-  "homepage": "https://github.com/Jakeschincariol/replica-skill",
-  "repository": "https://github.com/Jakeschincariol/replica-skill",
+  "homepage": "https://github.com/warengonzaga/replicate-skills",
+  "repository": "https://github.com/warengonzaga/replicate-skills",
   "license": "MIT",
   "keywords": [
+    "codex",
     "claude-code",
-    "claude-skills",
-    "app-clone",
-    "reverse-engineering",
-    "saas",
-    "indie-hacker",
-    "product"
+    "skills",
+    "app-replication"
   ],
-  "skills": "./"
+  "skills": "./skills/"
 }

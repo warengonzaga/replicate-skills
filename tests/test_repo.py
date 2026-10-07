@@ -8,8 +8,7 @@ from _load import ROOT
 SKILLS = ["replica-recon", "replica-architect", "replica-design", "replica-build",
           "replica-backend", "replica-test", "replica-diff", "replica-entrepreneur",
           "replica-brand", "replica-launch", "replica-deploy"]
-ABOUT = ("Eleven free Claude skills that clone any app: reverse-engineer it, rebuild it, "
-         "test it for bugs, then fix what its users hate. Free, MIT.")
+
 
 
 def frontmatter(path):
@@ -20,47 +19,48 @@ def frontmatter(path):
 
 
 class Repo(unittest.TestCase):
-    def test_eleven_skill_folders_at_the_root(self):
-        found = sorted(d for d in os.listdir(ROOT)
-                       if os.path.isfile(os.path.join(ROOT, d, "SKILL.md")))
+    def test_one_canonical_set_of_eleven_skills(self):
+        found = sorted(d for d in os.listdir(os.path.join(ROOT, "skills"))
+                       if os.path.isfile(os.path.join(ROOT, "skills", d, "SKILL.md")))
         self.assertEqual(found, sorted(SKILLS))
 
     def test_frontmatter_name_and_description(self):
         for s in SKILLS:
-            fm, text = frontmatter(os.path.join(ROOT, s, "SKILL.md"))
+            fm, text = frontmatter(os.path.join(ROOT, "skills", s, "SKILL.md"))
             self.assertIn("name: %s\n" % s, fm + "\n", s)
             self.assertRegex(fm, r"description: ", s)
             self.assertGreater(len(fm), 200, "%s description is too thin" % s)
             self.assertGreater(len(text.splitlines()), 60, s)
 
-    def test_plugin_manifest_points_at_the_root_skills(self):
+    def test_both_native_manifests_point_at_canonical_skills(self):
         with open(os.path.join(ROOT, ".claude-plugin", "plugin.json")) as fh:
             plugin = json.load(fh)
-        self.assertEqual(plugin["name"], "replica-skill")
-        self.assertEqual(plugin["skills"], "./")
-        self.assertEqual(plugin["description"], ABOUT)
+        self.assertEqual(plugin["name"], "replicate-skills")
+        self.assertEqual(plugin["skills"], "./skills/")
+        with open(os.path.join(ROOT, ".codex-plugin", "plugin.json")) as fh:
+            codex = json.load(fh)
+        for field in ["name", "version", "skills"]:
+            self.assertEqual(plugin[field], codex[field])
+        self.assertIn("Codex and Claude Code", plugin["description"])
         with open(os.path.join(ROOT, ".claude-plugin", "marketplace.json")) as fh:
             market = json.load(fh)
-        self.assertEqual(market["name"], "replica-skill")
-        self.assertEqual(market["plugins"][0]["name"], "replica-skill")
+        self.assertEqual(market["name"], "replicate-skills")
+        self.assertEqual(market["plugins"][0]["name"], "replicate-skills")
 
-    def test_readme_carries_the_reel_copy(self):
+    def test_documented_installation_paths(self):
         with open(os.path.join(ROOT, "README.md"), encoding="utf-8") as fh:
-            readme = " ".join(fh.read().split())
-        self.assertTrue(readme.startswith("# The Replica skill"))
-        for line in (
-            "Eleven Claude skills that clone any app. Free, MIT, no signup, no API key, "
-            "nothing to connect.",
-            "One reverse-engineers the app you want to clone. One rebuilds it. One tests it "
-            "for bugs. And one is the Entrepreneur: it reads what the app's users hate and "
-            "fixes it in yours, so you have an app you can sell.",
-            "/plugin marketplace add Jakeschincariol/replica-skill",
-            "/plugin install replica-skill@replica-skill",
-            "## Fine print",
-        ):
-            self.assertIn(line, readme)
-        for s in SKILLS:
-            self.assertIn("`/%s`" % s, readme)
+            readme = fh.read()
+        self.assertIn("--runtime codex", readme)
+        self.assertIn("~/.agents/skills/", readme)
+        self.assertIn("/plugin install replicate-skills@replicate-skills", readme)
+        for skill in SKILLS:
+            self.assertIn(skill, readme)
+
+
+    def test_shared_skill_contracts_and_only_release_workflow(self):
+        from _load import load
+        validator = load('scripts', 'validate')
+        self.assertEqual(validator.validate(), [])
 
     def test_no_em_dashes_anywhere(self):
         bad = []

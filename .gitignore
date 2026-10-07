@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .venv/
 *.tmp
+.agents/skills/
+.claude/
+dist/
+.env
+.env.*
+!.env.example

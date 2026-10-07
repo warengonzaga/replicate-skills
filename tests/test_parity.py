@@ -96,10 +96,53 @@ class Score(unittest.TestCase):
             self.assertEqual(parity.main([self.path, "--fail-under", "10"]), 0)
 
     def test_shipped_template_parses(self):
-        path = os.path.join(ROOT, "replica-recon", "features.csv")
+        path = os.path.join(ROOT, "skills", "replica-recon", "features.csv")
         r = parity.score(parity.load(path))
         self.assertGreater(r["counted"], 0)
         self.assertEqual(r["problems"], [])
+
+
+class ReleaseGate(unittest.TestCase):
+    def test_must_have_gate_blocks_high_scoring_incomplete_matrix(self):
+        import contextlib
+        import io
+        import tempfile
+        from _load import load
+        parity = load('replica-diff', 'parity')
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv') as matrix:
+            matrix.write('feature,area,priority,original,clone,notes\n')
+            matrix.write('critical,core,must,yes,no,missing\n')
+            for index in range(20):
+                matrix.write('extra%d,core,should,yes,yes,\n' % index)
+            matrix.flush()
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(parity.main([matrix.name, '--fail-under', '80']), 0)
+                self.assertEqual(parity.main([matrix.name, '--fail-under', '80', '--require-must-haves']), 1)
+
+    def test_gate_rejects_invalid_and_empty_matrices(self):
+        import contextlib
+        import io
+        import tempfile
+        from _load import load
+        parity = load('replica-diff', 'parity')
+        for rows in ['', 'feature,core,must,yes,invalid,\n']:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.csv') as matrix:
+                matrix.write('feature,area,priority,original,clone,notes\n' + rows)
+                matrix.flush()
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(parity.main([matrix.name, '--require-must-haves']), 1)
+
+    def test_gate_accepts_completed_must_haves(self):
+        import contextlib
+        import io
+        import tempfile
+        from _load import load
+        parity = load('replica-diff', 'parity')
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv') as matrix:
+            matrix.write('feature,area,priority,original,clone,notes\nbooking,core,must,yes,yes,\n')
+            matrix.flush()
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(parity.main([matrix.name, '--require-must-haves', '--fail-under', '80']), 0)
 
 
 if __name__ == "__main__":

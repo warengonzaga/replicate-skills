@@ -1,18 +1,18 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "replica-skill",
-  "description": "The Replica skill pack for Claude",
+  "name": "replicate-skills",
+  "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
   "owner": {
-    "name": "Jake Schincariol",
-    "url": "https://opusjake.ai"
+    "name": "Waren Gonzaga",
+    "url": "https://github.com/warengonzaga"
   },
   "plugins": [
     {
-      "name": "replica-skill",
-      "description": "Eleven Claude skills that clone any app: recon, architecture, design, build, backend, test, parity diff, a review-reading Entrepreneur skill, brand, launch and deploy.",
+      "name": "replicate-skills",
+      "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
       "source": "./",
       "category": "productivity",
-      "homepage": "https://github.com/Jakeschincariol/replica-skill"
+      "homepage": "https://github.com/warengonzaga/replicate-skills"
     }
   ]
 }
