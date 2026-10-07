@@ -47,8 +47,9 @@ Do not fill unknown fields with a plausible implementation of the reference app.
 
 ## Output
 
-Produce `replica/scope.json` and `replica/discovery.md`. Every acceptance criterion
-has a unique ID, importance, state, and evidence array. Start unchecked criteria as
+Produce `replica/scope.json` with `schema_version: 1` and a `criteria` array, plus
+`replica/discovery.md`. Every criterion has a unique `id`, boolean `required`,
+`state`, and `evidence` array. Start unchecked criteria as
 `unknown`; states are `pass`, `fail`, `blocked`, or `unknown`. Evidence includes a
 nonempty `ref` and `kind` of `observation` or `test` for the acceptance gate.
 

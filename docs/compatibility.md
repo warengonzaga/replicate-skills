@@ -21,7 +21,7 @@ Replacement checks on 2026-10-07:
 
 | Check | Observed result |
 | --- | --- |
-| Python 3.12 automated suite | 94 tests passed, including optional Pillow PNG checks |
+| Python 3.12 automated suite | 98 tests passed, including optional Pillow PNG checks |
 | Both copied installations | Eleven complete skills each, including LICENSE and README, in paths containing spaces |
 | Codex 0.159.0-alpha.3 native validator | Passed |
 | Codex app-server `plugin/read` | Eleven enabled replacement skills from the current source tree |

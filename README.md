@@ -44,7 +44,7 @@ Existing folders cause a conflict before writing. Use `--replace` to save them i
 a dated `.replicate-skills-backups/` directory next to the destination and install
 the selected replacements. A filesystem error rolls back that runtime's changes.
 Both clients are preflighted before writes; the two installations are separate
-transactions. `--dry-run` reports destinations without changing files.
+transactions. Destination directories must not overlap the source skills tree. `--dry-run` reports destinations without changing files.
 
 ### Native plugins
 

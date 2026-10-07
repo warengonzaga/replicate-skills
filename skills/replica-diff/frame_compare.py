@@ -55,10 +55,11 @@ def read_ppm(raw):
     if magic == b'P6':
         if cursor >= len(raw) or raw[cursor] not in b' \r\n\t\v\f':
             raise ValueError('Missing PPM raster separator.')
-        if raw[cursor:cursor + 2] == b'\r\n':
-            cursor += 2
-        else:
-            cursor += 1
+        # A CR separator may be followed by an LF-valued first pixel. Only
+        # consume CRLF as a header ending when the extra byte fits the raster size.
+        separator_size = 2 if (raw[cursor:cursor + 2] == b'\r\n' and
+                               len(raw) - cursor - 2 == count) else 1
+        cursor += separator_size
         rgb = raw[cursor:]
     else:
         values = [int(token()) for _ in range(count)]

@@ -70,6 +70,14 @@ class Frames(unittest.TestCase):
     def test_p6_first_pixel_whitespace_is_not_discarded(self):
         self.assertEqual(frames.read_ppm(b'P6\n1 1\n255\n\x0a\x20\x23').rgb, bytes((10, 32, 35)))
 
+    def test_p6_cr_separator_preserves_lf_first_channel(self):
+        rgb = bytes((10, 32, 35))
+        self.assertEqual(frames.read_ppm(b'P6\n1 1\n255\r' + rgb).rgb, rgb)
+
+    def test_p6_crlf_separator_preserves_lf_first_channel(self):
+        rgb = bytes((10, 32, 35))
+        self.assertEqual(frames.read_ppm(b'P6\r\n1 1\r\n255\r\n' + rgb).rgb, rgb)
+
     def test_p6_crlf_header(self):
         self.assertEqual(frames.read_ppm(b'P6\r\n1 1\r\n255\r\n\x00\x00\x00').width, 1)
 

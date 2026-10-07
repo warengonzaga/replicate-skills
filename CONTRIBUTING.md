@@ -41,7 +41,7 @@ Record manual agent checks separately from automated checks.
 
 State the behavior before and after the change, checks actually run, and remaining
 limitations. Preserve upstream copyright notices. Record any future third-party reuse
-and update the source history below when changing implementation provenance.
+and document its provenance and applicable notices in the contribution.
 Use draft PRs until all applicable checks are complete. The owner approves merges
 and releases. No GitHub branch protection is configured by these files; configure
 required checks in repository settings if desired.

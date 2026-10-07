@@ -54,6 +54,31 @@ class Installation(unittest.TestCase):
         self.install(dry_run=True)
         self.assertFalse(self.destination.exists())
 
+    def test_source_destination_overlap_rejected_before_writes(self):
+        source = self.project / 'source'
+        skill = source / 'replica-test'
+        skill.mkdir(parents=True)
+        (skill / 'SKILL.md').write_text('test fixture')
+        (self.project / 'LICENSE').write_text('test license')
+        for destination in (source, skill / 'installed', self.project):
+            with self.subTest(destination=destination), self.assertRaises(ValueError):
+                installer.install(source, destination, ['replica-test'], replace=True)
+        self.assertEqual((skill / 'SKILL.md').read_text(), 'test fixture')
+        self.assertFalse((skill / 'installed').exists())
+        self.assertEqual(list(source.iterdir()), [skill])
+
+    def test_symlink_parent_cannot_hide_source_overlap(self):
+        source = self.project / 'source'
+        skill = source / 'replica-test'
+        skill.mkdir(parents=True)
+        (skill / 'SKILL.md').write_text('test fixture')
+        (self.project / 'LICENSE').write_text('test license')
+        alias = self.project / 'alias'
+        alias.symlink_to(skill, target_is_directory=True)
+        with self.assertRaises(ValueError):
+            installer.install(source, alias / 'installed', ['replica-test'])
+        self.assertFalse((skill / 'installed').exists())
+
     def test_unknown_skill_rejected(self):
         with self.assertRaises(ValueError):
             self.install(['replica-unrecognized'])

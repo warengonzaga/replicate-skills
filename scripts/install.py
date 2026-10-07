@@ -21,6 +21,11 @@ def install(source, destination, names, replace=False, dry_run=False):
         raise ValueError('Choose at least one existing replica-* skill.')
     if destination.is_symlink() or (destination.exists() and not destination.is_dir()):
         raise ValueError('Destination must be a directory, not a symlink or file.')
+    source_location, destination_location = source.resolve(), destination.resolve()
+    if (source_location == destination_location or
+            source_location in destination_location.parents or
+            destination_location in source_location.parents):
+        raise ValueError('Destination must not overlap the source skills directory.')
     targets = [destination / name for name in names]
     if any(target.is_symlink() for target in targets):
         raise ValueError('Refusing to replace a symlinked skill.')
