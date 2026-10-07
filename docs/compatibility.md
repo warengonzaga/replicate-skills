@@ -32,7 +32,9 @@ Observed on 2026-10-07:
   installation passed; plugin list reports version 0.1.0 enabled, with all eleven
   canonical SKILL.md files present in the installed cache. The validator warns
   that root CLAUDE.md is not plugin context; that file is for repository contributors.
-- Python 3.12.14: helper/installer regression tests and structural validation passed.
+- Python 3.12.14: all 88 helper/installer regression tests and structural validation
+  passed, including malformed input and output-error cases.
+- Both runtime installers copy LICENSE and NOTICE.md into all eleven skills.
 
 Trigger selection and end-to-end agent behavior remain manual checks in
 [the evaluation scenarios](evaluation.md). No model-driven app build, live browser
@@ -46,10 +48,11 @@ For sibling helpers used by deployment, set `SKILLS_ROOT` to its parent director
 Do not assume a particular home directory or change HOME. Missing helpers are a
 blocked check, not permission to fabricate a result.
 
-## Reference reviewed
+## Combined source approaches
 
-The packaging approach in https://github.com/Jayesh01323/replica-skill-openai
-was reviewed as reference material only. No files or code were copied from it.
-Its README suggests a skills directory and its repository also keeps duplicate
-root skill folders. This project explicitly points both native manifests at the
-same canonical skills/ folders, avoiding divergent copies, and retains an installer fallback.
+The Claude Code workflow foundation comes from Jakeschincariol/replica-skill.
+The OpenAI packaging approach was informed by Jayesh01323/replica-skill-openai.
+Both are credited in [NOTICE.md](../NOTICE.md). Exact commits and the distinction
+between the implementation import and packaging reference are recorded in
+[UPSTREAM.md](../UPSTREAM.md). Both native manifests load the same revised skill
+folders, and all six helpers have documented refactors and regression coverage.

@@ -46,7 +46,11 @@ and the project artifact directory `replica/` are intentionally stable.
 ## Scope discipline
 
 Avoid unsolicited new services, dependencies, publishing, and account changes.
-Keep upstream helper behavior stable unless a documented bug fix has coverage.
+Revise carried-forward instructions and refactor helpers for concrete clarity,
+maintainability, or correctness improvements. Preserve valid-input CLI and artifact
+contracts; document intentional behavior changes and cover them with regressions.
+Credit both source projects and record imported versus referenced material
+accurately. MIT reuse is permitted, and source notices survive rewriting.
 Evaluate skill changes with scenarios as well as structural checks; prose linting
 alone cannot establish instruction quality or behavioral equivalence.
 

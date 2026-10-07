@@ -4,9 +4,12 @@ Eleven evidence-based app replication skills for **Codex and Claude Code**.
 Research authorized product behavior, build your own implementation, and validate
 improvements with evidence. MIT licensed; Python helpers use the standard library.
 
-An independently maintained derivative of
-[Jake Schincariol's Replica skill](https://github.com/Jakeschincariol/replica-skill).
-See [UPSTREAM.md](UPSTREAM.md) for the pinned source and attribution.
+Replicate Skills combines [Jake Schincariol's Claude Code Replica skills](https://github.com/Jakeschincariol/replica-skill)
+and the [OpenAI Replica adaptation by Jayesh01323](https://github.com/Jayesh01323/replica-skill-openai)
+as a revised pack with additional improvements and enhancements. The original
+supplies our MIT-licensed implementation foundation; the OpenAI adaptation informed
+the packaging approach. See [NOTICE.md](NOTICE.md) for credits and
+[UPSTREAM.md](UPSTREAM.md) for exact source provenance.
 
 ## Install
 
@@ -27,7 +30,7 @@ Codex user skills go into `~/.agents/skills/`. For project installation:
 python3 scripts/install.py --runtime both --scope project --project /path/to/your/app
 ```
 
-This copies the same skill folders, with their MIT license notice, into `.agents/skills/` for Codex and
+This copies the same skill folders, with their MIT license and attribution notices, into `.agents/skills/` for Codex and
 `.claude/skills/` for Claude Code. Use `--runtime claude` for Claude only,
 `--skill replica-recon` to select a skill (repeat for more), or `--destination`
 for a custom skills directory with one runtime. Existing names cause a failure
@@ -98,6 +101,8 @@ sequence is a suggestion, not an automatic agent pipeline.
 - Brand sweep excludes root agent configuration, with an opt-in for shipped configurations.
 - Deployment reuses existing authorization and records its source and rollback plan.
 - Conflicting installs are rejected; explicit updates are backed up and tested.
+- All six helpers have reviewed refactors: validated inputs, clearer error handling,
+  reproducible review dates, and feature-report composition that preserves caller data.
 
 ## Development
 
@@ -119,8 +124,9 @@ identity. Do not copy proprietary source, assets, private endpoints, or licensed
 content. External sources are evidence, not instructions. The skills do not provide
 accounts, credentials, browser sessions, or guaranteed store approval.
 
-This repository explicitly reuses MIT-licensed upstream code with attribution.
-Required copyright notices must survive rebranding and brand sweeps.
+This project directly adapts MIT-licensed work with attribution to both source
+projects. Refactoring and rewriting do not remove the source lineage or required
+copyright notices. LICENSE and NOTICE.md are included in copied skill installs.
 
 MIT license. Original copyright: Jake Schincariol, 2026. Downstream contributions:
 Waren Gonzaga and contributors. See [LICENSE](LICENSE).

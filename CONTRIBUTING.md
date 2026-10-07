@@ -55,3 +55,13 @@ The Release Build Flow action is pinned to a commit. Skills ship as source;
 there is no npm package or container publication. A manual run is permitted only
 on main. A release is not considered verified until its workflow and tag are
 read back successfully. Branch protection is not installed by these files.
+
+## Adaptation and attribution
+
+Credit the original Claude Code Replica skills and the OpenAI adaptation in
+NOTICE.md. Record source commits and whether material was imported, adapted, or
+used as reference in UPSTREAM.md. MIT permits direct adaptation; retain all
+applicable license notices after refactoring. Review reused components and revise
+them for concrete clarity, correctness, or maintainability improvements. Explain
+the change and cover behavior with regression tests rather than making cosmetic
+edits to imply independent authorship.
