@@ -11,11 +11,8 @@ The idea of an app replication skill pack was inspired by
 [Jayesh01323's OpenAI adaptation](https://github.com/Jayesh01323/replica-skill-openai)
 informed the exploration of supporting both agent clients. Thank you to both projects.
 
-The current skill bodies, templates, six tools, and tool tests were written as a
-replacement for the earlier imported prototype. This is a new implementation after
-reviewing those sources, not a clean-room development claim. Historical imports
-and their original license remain in the commits linked from [closed PR #1](https://github.com/warengonzaga/replicate-skills/pull/1); see
-[the source history](CONTRIBUTING.md#source-history).
+The pack includes newly written skill instructions, templates, six standalone tools,
+and tests, with one shared implementation for both clients.
 
 ## Install
 

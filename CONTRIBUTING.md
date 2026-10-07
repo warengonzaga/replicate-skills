@@ -59,38 +59,12 @@ read back successfully. Branch protection is not installed by these files.
 ## Authorship and inspiration
 
 Credit both inspiration projects in README.md. Implement from explicit requirements
-rather than transplanting their instructions, templates, tools, or tests. Do not
-claim a clean-room process: the sources were reviewed during the earlier prototype.
-Any future third-party reuse must retain the applicable license and copyright
-notices. Renaming or refactoring imported code does not establish independent authorship.
+rather than transplanting their instructions, templates, tools, or tests. Source
+review does not establish a clean-room process. Any future third-party reuse must
+retain the applicable license and copyright notices. Renaming or refactoring
+imported code does not establish independent authorship.
 
-## Source history
-
-On 2026-10-07, the prototype imported Jake Schincariol's MIT-licensed Replica
-Skills at `77c9436fb3d18c3d58169efb8caf4fe906b0dc51` from
-https://github.com/Jakeschincariol/replica-skill. The import commit `40312a4`
-linked from [closed PR #1](https://github.com/warengonzaga/replicate-skills/pull/1)
-contains the original copyright and license. Intermediate adaptations retained it.
-
-The OpenAI adaptation at `a574630bb884ac295536a49ea942cb17c2f17881` from
-https://github.com/Jayesh01323/replica-skill-openai was reviewed for packaging;
-no separate files were imported from that repository.
-
-The owner subsequently requested replacing the imported implementation. The current
-skill instructions, templates, six tools, and tool tests were newly written with
-new contracts. The imported helper and template filenames were retired. Plugin
-metadata was authored for this project against the clients' packaging conventions;
-the original imported manifests and ignore rules were replaced as well.
-
-The current LICENSE applies to the replacement tree. It names Waren Gonzaga.
-Historical snapshots linked from closed PR #1 retain their original notices; the
-current license does not change their licensing. The superseded prototype branch
-was removed at the owner's request. The replacement branch
-`feature/replicate-skills` starts at dev and records the final implementation in one
-commit without the prototype commits in its ancestry. Feature work is squash-merged into dev under Clean Flow, so release
-snapshots contain the reviewed current tree rather than intermediate source states.
-
-### Replacement design
+## Implementation contracts
 
 - Required acceptance is an explicit gate with evidence; it is not a weighted score.
 - Visual comparison preserves dimensions, validates masks, and emits a heatmap.

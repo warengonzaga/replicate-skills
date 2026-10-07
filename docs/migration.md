@@ -1,6 +1,6 @@
-# Migrating from the imported prototype
+# Helper interface migration
 
-The replacement is an intentional interface change before the first release.
+The current tools introduce explicit contracts before the first release.
 Skill invocation names and project artifact root `replica/` stay stable. Internal
 helper names, templates, input schemas, and report fields change.
 
