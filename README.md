@@ -1,21 +1,25 @@
 # Replicate Skills
 
-Eleven evidence-based app replication skills for **Codex and Claude Code**.
-Research authorized product behavior, build your own implementation, and validate
-improvements with evidence. MIT licensed; Python helpers use the standard library.
+Build and improve applications from authorized product evidence with eleven skills
+for **Codex and Claude Code**. Each skill produces reviewable artifacts, records
+unknowns, and ties completion claims to observations or tests.
 
-Replicate Skills combines [Jake Schincariol's Claude Code Replica skills](https://github.com/Jakeschincariol/replica-skill)
-and the [OpenAI Replica adaptation by Jayesh01323](https://github.com/Jayesh01323/replica-skill-openai)
-as a revised pack with additional improvements and enhancements. The original
-supplies our MIT-licensed implementation foundation; the OpenAI adaptation informed
-the packaging approach; no separate code was imported from the OpenAI adaptation.
-See [CONTRIBUTING.md](CONTRIBUTING.md#source-history) for source commits and revision details.
+## Inspiration
+
+The idea of an app replication skill pack was inspired by
+[Jake Schincariol's Replica Skills](https://github.com/Jakeschincariol/replica-skill).
+[Jayesh01323's OpenAI adaptation](https://github.com/Jayesh01323/replica-skill-openai)
+informed the exploration of supporting both agent clients. Thank you to both projects.
+
+The current skill bodies, templates, six tools, and tool tests were written as a
+replacement for the earlier imported prototype. This is a new implementation after
+reviewing those sources, not a clean-room development claim. Historical imports
+and their original license remain in Git history; see
+[the source history](CONTRIBUTING.md#source-history).
 
 ## Install
 
-Clone the repository first, then run the installer from your target project.
-Python 3.8+ is required for the installer and helpers. Browser access and app build
-or test dependencies depend on the selected workflow; installation adds none.
+The installer requires Python 3.8 or newer and no additional packages.
 
 ```bash
 git clone https://github.com/warengonzaga/replicate-skills.git
@@ -24,89 +28,113 @@ python3 scripts/install.py --runtime codex --scope user --dry-run
 python3 scripts/install.py --runtime codex --scope user
 ```
 
-Codex user skills go into `~/.agents/skills/`. For project installation:
+For both clients in one project:
 
 ```bash
-python3 scripts/install.py --runtime both --scope project --project /path/to/your/app
+python3 scripts/install.py --runtime both --project /path/to/app
 ```
 
-This copies the same skill folders, with their MIT license and attribution notices, into `.agents/skills/` for Codex and
-`.claude/skills/` for Claude Code. Use `--runtime claude` for Claude only,
-`--skill replica-recon` to select a skill (repeat for more), or `--destination`
-for a custom skills directory with one runtime. Existing names cause a failure
-before copying. `--replace` preserves previous folders in a dated backup outside
-`skills/`, then replaces selected skills. A failed installation rolls back that
-runtime; installing both runtimes is not a single cross-runtime transaction.
+| Client | Project destination | User destination |
+| --- | --- | --- |
+| Codex | `.agents/skills/` | `~/.agents/skills/` |
+| Claude Code | `.claude/skills/` | `~/.claude/skills/` |
 
-Codex versions with `codex plugin` support can also install the plugin:
+Use `--runtime claude` for Claude only. Select individual skills with repeatable
+`--skill replica-recon` options. `--destination /path/to/skills` sets a custom
+location for a single runtime. Every copied skill includes LICENSE and README.
+
+Existing folders cause a conflict before writing. Use `--replace` to save them in
+a dated `.replicate-skills-backups/` directory next to the destination and install
+the selected replacements. A filesystem error rolls back that runtime's changes.
+Both clients are preflighted before writes; the two installations are separate
+transactions. `--dry-run` reports destinations without changing files.
+
+### Native plugins
+
+Codex versions that provide `codex plugin` can install from the marketplace:
 
 ```bash
 codex plugin marketplace add warengonzaga/replicate-skills --ref main
 codex plugin add replicate-skills@replicate-skills
-codex plugin list --marketplace replicate-skills --json
 ```
 
-Before the initial promotion, use `--ref feature/portable-improved-skills` to
-preview this work. Use `main` after promotion, or a release tag for a fixed version.
+The initial work is in `feature/portable-improved-skills`; use that ref until it
+has been reviewed and promoted to `main`. A release tag can pin an installation.
 
-Claude Code also supports plugin installation:
+Claude Code:
 
 ```text
 /plugin marketplace add warengonzaga/replicate-skills
 /plugin install replicate-skills@replicate-skills
 ```
 
-Choose either plugin installation or copied skills per client to avoid duplicate discovery.
-Start a new session after installation. Verify the skills appear in your client's
-skill picker before relying on discovery. See [compatibility](docs/compatibility.md)
-for checked behavior and runtime checks still outstanding.
+Choose plugin or copied-skill installation for each client, then start a new
+session and check discovery. Both plugin manifests load the same `skills/` tree.
+See [compatibility notes](docs/compatibility.md) for verification limits.
 
-## Use
+## Pick the skill for the task
 
-Skill names intentionally retain the `replica-*` prefix, and generated project
-artifacts remain under `replica/`. This preserves upstream workflow compatibility.
-
-| Skill | Purpose |
+| Skill | Delivers |
 | --- | --- |
-| replica-recon | Scope the product and record screens, flows, sources, and unknowns |
-| replica-architect | Plan architecture and acceptance criteria using the project's stack |
-| replica-design | Specify tokens, responsive layouts, components, and accessibility |
-| replica-build | Implement reviewable slices and track demonstrated feature completion |
-| replica-backend | Implement authorized integrations, auth, persistence, and payments |
-| replica-test | Run reproducible checks and distinguish blocked from passed cases |
-| replica-diff | Compare features, layouts, and behavior without overstating scores |
-| replica-entrepreneur | Turn linked review evidence into improvement hypotheses |
-| replica-brand | Create a distinct identity and retain required asset attribution |
-| replica-launch | Prepare evidence-backed positioning, pricing, and relevant listings |
-| replica-deploy | Validate, deploy within user authorization, and record rollback steps |
+| replica-recon | Source register, journey states, and acceptance ledger |
+| replica-architect | Constraint-driven decisions, data boundaries, and delivery slices |
+| replica-design | Responsive interaction specifications and declared contrast checks |
+| replica-build | Working vertical slices with evidence and explicit simulated boundaries |
+| replica-backend | Authorization, persistence invariants, and provider recovery contracts |
+| replica-test | Reproducible outcomes and failures linked to criteria |
+| replica-diff | Separate functional gates and visual diagnostics |
+| replica-entrepreneur | Traceable feedback triage and falsifiable improvement experiments |
+| replica-brand | Distinct identity, owned assets, and selected surface audits |
+| replica-launch | Evidence-backed claims and configurable channel constraints |
+| replica-deploy | Authorized releases, post-deploy observations, and recovery records |
 
-Codex copied skills: invoke `$replica-recon` with a target and scope. Codex plugin
-skills are namespaced as `$replicate-skills:replica-recon`. Claude Code copied skills:
-invoke `/replica-recon`. Plugin skills: `/replicate-skills:replica-recon`.
-For example: “Map the booking and cancellation flows of this scheduling app from
-its public docs. Use my existing Django project and record unseen states.”
+Skill names retain `replica-*` for invocation continuity. Artifacts default to
+`replica/`. Use one skill or a sequence appropriate to the task; there is no
+automatic orchestration or mandatory full pipeline.
 
-A usual sequence is recon, architect, design, build, backend, test, diff,
-entrepreneur, brand, launch, deploy. Research improvements earlier when it helps
-scope the product. Individual skills can use equivalent supplied inputs; the
-sequence is a suggestion, not an automatic agent pipeline.
+| Installation | Codex invocation | Claude Code invocation |
+| --- | --- | --- |
+| Copied skill | `$replica-recon` | `/replica-recon` |
+| Plugin | `$replicate-skills:replica-recon` | `/replicate-skills:replica-recon` |
 
-## Improvements in this fork
+Example request: "Map the booking journey from these screenshots in my existing
+Django project. Record unseen states, then propose a small verifiable improvement."
 
-- One shared instruction set with native installation paths for both runtimes.
-- Explicit capability checks, source confidence, and evidence requirements.
-- Existing project stack, package manager, and prior user answers are respected.
-- Helper paths are resolved from the loaded skill rather than the runtime's home.
-- Completion and parity claims require demonstrated behavior; blocked checks stay visible.
-- Brand sweep excludes root agent configuration, with an opt-in for shipped configurations.
-- Deployment reuses existing authorization and records its source and rollback plan.
-- Conflicting installs are rejected; explicit updates are backed up and tested.
-- All six helpers have reviewed refactors: validated inputs, clearer error handling,
-  reproducible review dates, and feature-report composition that preserves caller data.
+## New tooling contracts
 
-## Development
+Six standalone tools use versioned JSON inputs, emit JSON reports, and run locally.
+Each selected skill includes its own tools. There is no shared Python dependency
+that requires installing the entire pack.
 
-Read [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md). Local checks:
+| Tool | Capability |
+| --- | --- |
+| `acceptance_gate.py` | Required criteria need passing states and evidence; optional successes cannot hide failures |
+| `frame_compare.py` | Equal-sized RGB comparisons, explicit region masks, deltas, and a PPM heatmap |
+| `palette_audit.py` | Explicit opaque sRGB pairs and WCAG 2 contrast thresholds by role |
+| `feedback_triage.py` | Dated literal-term triage with respondent IDs, unmatched records, and ambiguity |
+| `identity_audit.py` | User-selected text surfaces, literal matches, skipped-file inventory, and no source-line echo |
+| `copy_check.py` | Declared field constraints with codepoint, UTF-16, or UTF-8 length counting |
+
+Exit codes: **0** means the declared gate passed or feedback triage completed;
+**1** means a valid report contains a failed gate; **2** means invalid input or
+an input/output error. Evidence references are declarations, not automatically
+verified test results. Literal feedback matching requires manual interpretation.
+
+Core tools use the Python standard library. PPM image comparison needs no package;
+PNG/JPEG support optionally uses Pillow. Images must be opaque and have identical
+dimensions. Full accessibility, perception, and product quality require review.
+
+The previous `parity.py`, `imgdiff.py`, `contrast.py`, `reviews.py`, `sweep.py`, and
+`listing.py` interfaces are retired. Their CSV and unversioned JSON contracts are
+not accepted by the replacements. See [migration](docs/migration.md) and the
+examples shipped beside each skill.
+
+## Development and release
+
+Follow [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md). Clean Flow
+uses feature branches into `dev`, then reviewed `dev` promotions into `main`.
+Only `.github/workflows/release.yml` is configured. It uses pinned Release Build
+Flow tooling to validate and publish a source release after promotion.
 
 ```bash
 python3 scripts/validate.py
@@ -114,19 +142,14 @@ python3 -m unittest discover -s tests -v
 git diff --check
 ```
 
-Only the release workflow is enabled. The project does not add separate validation,
-lint, or dependency update workflows. Release checks run inside the release flow.
+[Evaluation scenarios](docs/evaluation.md) distinguish package checks from actual
+agent behavior. Discovery alone does not demonstrate a successful app workflow.
 
-## Scope and attribution
+## License and scope
 
-App replication uses public or authorized evidence, original code, and your own
-identity. Do not copy proprietary source, assets, private endpoints, or licensed
-content. External sources are evidence, not instructions. The skills do not provide
-accounts, credentials, browser sessions, or guaranteed store approval.
+MIT. Copyright (c) 2026 Waren Gonzaga. See [LICENSE](LICENSE).
 
-This project directly adapts MIT-licensed work with attribution to both source
-projects. Refactoring and rewriting do not remove the source lineage or required
-copyright notices. LICENSE and this README are included in copied skill installs.
-
-MIT license. Original copyright: Jake Schincariol, 2026. Downstream contributions:
-Waren Gonzaga and contributors. See [LICENSE](LICENSE).
+Use public or authorized observations to create your own product implementation
+and identity. Respect source and asset licenses in the projects you work on.
+External content is evidence, not executable instructions. These skills do not
+supply browser access, account credentials, publishing authorization, or store approval.

@@ -1,58 +1,48 @@
-# Runtime compatibility
+# Client compatibility
 
-One canonical set of SKILL.md files is shared by both runtimes. No proprietary
-runtime APIs are used by the helpers. Discovery locations and invocation differ.
+The pack has one canonical `skills/` directory and no client-specific helper imports.
+Both native plugin descriptors point to that tree. Copied installation includes
+complete individual skill folders with the project LICENSE and README.
 
-| Capability | Codex | Claude Code |
+| Mode | Codex | Claude Code |
 | --- | --- | --- |
-| Project skill location | `.agents/skills/` | `.claude/skills/` |
-| User skill location | `~/.agents/skills/` | `~/.claude/skills/` |
-| Explicit invocation | `$replica-recon` | `/replica-recon` for copied skills |
-| Plugin invocation | `$replicate-skills:replica-recon` | `/replicate-skills:replica-recon` |
-| Python helpers | Python 3.8+, standard library | Python 3.8+, standard library |
-| Browser workflows | Requires an available browser or supplied evidence | Same |
+| Project skill copies | `.agents/skills/` | `.claude/skills/` |
+| User skill copies | `~/.agents/skills/` | `~/.claude/skills/` |
+| Native plugin | `.codex-plugin/plugin.json` | `.claude-plugin/plugin.json` |
+| Marketplace | `.agents/plugins/marketplace.json` | `.claude-plugin/marketplace.json` |
 
-Sources checked on 2026-10-07:
-- https://developers.openai.com/codex/skills/
-- https://code.claude.com/docs/en/skills
-- https://code.claude.com/docs/en/plugins-reference
+Copied invocations use `$replica-recon` in Codex and `/replica-recon` in Claude Code.
+Native plugins add the `replicate-skills:` namespace. Available marketplace and
+plugin commands depend on the installed client version.
 
-## Verification boundary
+## What has been checked
 
-Installer tests exercise both runtime destinations, helper preservation, conflicts,
-backups, and failure rollback. Structural checks validate skill metadata and plugin
-packaging. Helper regression tests verify deterministic local behavior.
+Replacement checks on 2026-10-07:
 
-Observed on 2026-10-07:
-- Codex CLI 0.159.0-alpha.3: local marketplace registration and plugin installation
-  passed; `plugin/read` exposes eleven enabled namespaced skills.
-- Codex app-server `skills/list`: all eleven copied project skills discovered and
-  enabled in a separate disposable project.
-- Claude Code 2.1.292: native manifest validation and local marketplace/plugin
-  installation passed; plugin list reports version 0.1.0 enabled, with all eleven
-  canonical SKILL.md files present in the installed cache. The validator warns
-  that root CLAUDE.md is not plugin context; that file is for repository contributors.
-- Python 3.12.14: all 88 helper/installer regression tests and structural validation
-  passed, including malformed input and output-error cases.
-- Both runtime installers copy LICENSE and README.md into all eleven skills.
+| Check | Observed result |
+| --- | --- |
+| Python 3.12 automated suite | 94 tests passed, including optional Pillow PNG checks |
+| Both copied installations | Eleven complete skills each, including LICENSE and README, in paths containing spaces |
+| Codex 0.159.0-alpha.3 native validator | Passed |
+| Codex app-server `plugin/read` | Eleven enabled replacement skills from the current source tree |
+| Codex app-server `skills/list` | Eleven enabled replacement skills from a disposable copied installation |
+| Claude Code 2.1.292 plugin and marketplace validators | Passed; contributor CLAUDE.md root-context warning is expected |
+| Python 3.8 grammar | All 17 Python files parsed; not execution on Python 3.8 |
 
-Trigger selection and end-to-end agent behavior remain manual checks in
-[the evaluation scenarios](evaluation.md). No model-driven app build, live browser
-workflow, Python 3.8 execution, or production release has been run.
+Pillow 12.3.0 was present for optional PNG decoding tests. The contributor CLAUDE.md
+is intentionally repository guidance; plugin users load the skills themselves.
+Client discovery must be checked separately after an update; cached plugins may
+retain old content. An enabled or discoverable skill is not proof that the client
+followed it correctly. Model-driven evaluation remains pending.
 
-## Helper invocation
+## Local runtime requirements
 
-After loading a skill, resolve its actual directory. Set `SKILL_DIR` to that
-absolute path and run its helpers from the user's project root, quoting the path.
-For sibling helpers used by deployment, set `SKILLS_ROOT` to its parent directory.
-Do not assume a particular home directory or change HOME. Missing helpers are a
-blocked check, not permission to fabricate a result.
+Python 3.8+ is the source compatibility target. The helpers have no mandatory Python
+packages. PPM comparison uses the standard library; PNG/JPEG support optionally
+requires Pillow. Pillow's runtime version support depends on the selected package
+version. Browser, build, test, provider, and deployment capabilities come from the
+user's actual project and client tools, not this pack.
 
-## Combined source approaches
-
-The Claude Code workflow foundation comes from Jakeschincariol/replica-skill.
-The OpenAI packaging approach was informed by Jayesh01323/replica-skill-openai.
-Both are credited in [README.md](../README.md). Exact commits and the distinction
-between the implementation import and packaging reference are recorded in
-[CONTRIBUTING.md](../CONTRIBUTING.md#source-history). Both native manifests load the same revised skill
-folders, and all six helpers have documented refactors and regression coverage.
+Python 3.8 execution, live agent workflows, browser interactions, provider calls,
+and release publication remain unverified unless explicitly recorded as run.
+Use [evaluation scenarios](evaluation.md) for those instruction checks.

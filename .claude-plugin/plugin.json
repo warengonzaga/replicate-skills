@@ -1,19 +1,19 @@
 {
   "name": "replicate-skills",
-  "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
   "version": "0.1.0",
+  "description": "Evidence-led product replication and improvement for Codex and Claude Code.",
+  "skills": "./skills/",
   "author": {
     "name": "Waren Gonzaga",
     "url": "https://github.com/warengonzaga"
   },
-  "homepage": "https://github.com/warengonzaga/replicate-skills",
-  "repository": "https://github.com/warengonzaga/replicate-skills",
   "license": "MIT",
+  "repository": "https://github.com/warengonzaga/replicate-skills",
+  "homepage": "https://github.com/warengonzaga/replicate-skills",
   "keywords": [
+    "product-research",
+    "acceptance-evidence",
     "codex",
-    "claude-code",
-    "skills",
-    "app-replication"
-  ],
-  "skills": "./skills/"
+    "claude-code"
+  ]
 }

@@ -29,6 +29,16 @@ def validate(root=ROOT):
                 errors.append(name + ': missing ' + heading)
         if '~/.claude/' in body or 'Claude never' in body:
             errors.append(name + ': runtime-specific instruction')
+        for helper in re.findall(r'\$SKILL_DIR/([a-z_]+\.py)', body):
+            if not (path.parent / helper).is_file():
+                errors.append(name + ': missing helper ' + helper)
+        for example in path.parent.glob('*.example.json'):
+            try:
+                document = json.loads(example.read_text(encoding='utf-8'))
+                if type(document.get('schema_version')) is not int or document['schema_version'] != 1:
+                    errors.append(name + ': invalid example schema')
+            except (OSError, ValueError, AttributeError, KeyError):
+                errors.append(name + ': invalid JSON example')
         for command in re.findall(r'^python3 (.+)$', body, re.M):
             if not command.startswith(('"$SKILL_DIR/', '"$SKILLS_ROOT/')):
                 errors.append(name + ': unresolved helper path')

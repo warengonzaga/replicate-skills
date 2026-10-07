@@ -1,7 +1,5 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "replicate-skills",
-  "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
   "owner": {
     "name": "Waren Gonzaga",
     "url": "https://github.com/warengonzaga"
@@ -9,10 +7,11 @@
   "plugins": [
     {
       "name": "replicate-skills",
-      "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
       "source": "./",
+      "description": "Evidence-led product replication and improvement for Codex and Claude Code.",
       "category": "productivity",
       "homepage": "https://github.com/warengonzaga/replicate-skills"
     }
-  ]
+  ],
+  "description": "Evidence-led product replication and improvement skills for two agent clients."
 }

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "fields": [
+    {
+      "id": "headline",
+      "text": "A clearer way to book",
+      "required": true,
+      "max_length": 60,
+      "count": "codepoints",
+      "source": "Example internal constraint; replace with a dated channel source."
+    }
+  ]
+}

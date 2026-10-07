@@ -1,11 +1,17 @@
-.DS_Store
+# Local Python execution
 __pycache__/
-*.pyc
+*.py[cod]
 .venv/
-*.tmp
+
+# Installed clients and generated distributions
 .agents/skills/
 .claude/
+.codex/
 dist/
+
+# Local credentials and editor artifacts
 .env
 .env.*
 !.env.example
+.DS_Store
+*.tmp

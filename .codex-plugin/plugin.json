@@ -1,24 +1,24 @@
 {
   "name": "replicate-skills",
-  "description": "Eleven evidence-based app replication skills for Codex and Claude Code.",
   "version": "0.1.0",
+  "description": "Evidence-led product replication and improvement for Codex and Claude Code.",
+  "skills": "./skills/",
   "author": {
     "name": "Waren Gonzaga",
     "url": "https://github.com/warengonzaga"
   },
-  "homepage": "https://github.com/warengonzaga/replicate-skills",
-  "repository": "https://github.com/warengonzaga/replicate-skills",
   "license": "MIT",
+  "repository": "https://github.com/warengonzaga/replicate-skills",
+  "homepage": "https://github.com/warengonzaga/replicate-skills",
   "keywords": [
+    "product-research",
+    "acceptance-evidence",
     "codex",
-    "claude-code",
-    "skills",
-    "app-replication"
+    "claude-code"
   ],
-  "skills": "./skills/",
   "interface": {
     "displayName": "Replicate Skills",
-    "shortDescription": "Build and improve apps from authorized evidence",
+    "shortDescription": "Turn authorized evidence into tested product journeys",
     "developerName": "Waren Gonzaga",
     "category": "Productivity",
     "capabilities": [
@@ -26,8 +26,8 @@
     ],
     "websiteURL": "https://github.com/warengonzaga/replicate-skills",
     "defaultPrompt": [
-      "Use $replicate-skills:replica-recon to map the core flow from public docs."
+      "Use $replicate-skills:replica-recon to build an evidence ledger for this product journey."
     ],
-    "longDescription": "Eleven evidence-based app replication skills for Codex and Claude Code."
+    "longDescription": "Evidence-led product replication and improvement for Codex and Claude Code."
   }
 }
