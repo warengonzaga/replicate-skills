@@ -69,8 +69,8 @@ notices. Renaming or refactoring imported code does not establish independent au
 On 2026-10-07, the prototype imported Jake Schincariol's MIT-licensed Replica
 Skills at `77c9436fb3d18c3d58169efb8caf4fe906b0dc51` from
 https://github.com/Jakeschincariol/replica-skill. The import commit `40312a4`
-on the archived `feature/portable-improved-skills` branch contains the original
-copyright and license. Intermediate adaptations retained it.
+linked from [closed PR #1](https://github.com/warengonzaga/replicate-skills/pull/1)
+contains the original copyright and license. Intermediate adaptations retained it.
 
 The OpenAI adaptation at `a574630bb884ac295536a49ea942cb17c2f17881` from
 https://github.com/Jayesh01323/replica-skill-openai was reviewed for packaging;
@@ -83,9 +83,9 @@ metadata was authored for this project against the clients' packaging convention
 the original imported manifests and ignore rules were replaced as well.
 
 The current LICENSE applies to the replacement tree. It names Waren Gonzaga.
-Historical snapshots on `feature/portable-improved-skills` containing imported material
-retain their historical notices; the current license does not change the licensing
-of those snapshots. That prototype branch is preserved. The replacement branch
+Historical snapshots linked from closed PR #1 retain their original notices; the
+current license does not change their licensing. The superseded prototype branch
+was removed at the owner's request. The replacement branch
 `feature/replicate-skills` starts at dev and records the final implementation in one
 commit without the prototype commits in its ancestry. Feature work is squash-merged into dev under Clean Flow, so release
 snapshots contain the reviewed current tree rather than intermediate source states.

@@ -49,8 +49,8 @@ and the project artifact directory `replica/` are intentionally stable.
 Avoid unsolicited new services, dependencies, publishing, and account changes.
 Design instructions and tools from explicit product requirements. Maintain versioned
 JSON contracts; document migrations and cover behavior with regression checks.
-The retired imported prototype remains on `feature/portable-improved-skills`
-with its original notices. The current branch starts from dev with the final tree.
+The retired prototype commits and notices are linked from closed PR #1. Its branch
+has been removed. The current branch starts from dev with the final tree.
 The current tree uses replacement skill bodies, templates, tools, and tests. Do not
 reintroduce copied source material under an original-only license. If future work
 imports licensed material, preserve its applicable notices and describe it accurately.
@@ -63,8 +63,8 @@ This project adopts WG Tech Labs [Clean Workflow](https://github.com/wgtechlabs/
 [Clean Flow](https://github.com/wgtechlabs/clean-flow),
 [Clean Commit](https://github.com/wgtechlabs/clean-commit), and
 [Clean Labels](https://github.com/wgtechlabs/clean-labels).
-The bootstrap and archived prototype predate this adoption. Preserve the archived
-prototype branch; new implementation history contains the reviewed replacement.
+The bootstrap and retired prototype predate this adoption. New implementation
+history contains the reviewed replacement; closed PR #1 records the prototype.
 
 Only `.github/workflows/release.yml` is enabled. It validates, plans a version,
 synchronizes both plugin manifests, and uses Release Build Flow to publish from

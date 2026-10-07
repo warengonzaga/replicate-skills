@@ -14,7 +14,7 @@ informed the exploration of supporting both agent clients. Thank you to both pro
 The current skill bodies, templates, six tools, and tool tests were written as a
 replacement for the earlier imported prototype. This is a new implementation after
 reviewing those sources, not a clean-room development claim. Historical imports
-and their original license remain on the earlier prototype branch; see
+and their original license remain in the commits linked from [closed PR #1](https://github.com/warengonzaga/replicate-skills/pull/1); see
 [the source history](CONTRIBUTING.md#source-history).
 
 ## Install
