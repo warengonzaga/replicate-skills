@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "pairs": [
+    {
+      "id": "body-on-page",
+      "foreground": "#263238",
+      "background": "#FFFFFF",
+      "role": "text"
+    }
+  ]
+}
