@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "topics": [
+    {
+      "id": "recovery",
+      "terms": [
+        "retry",
+        "restore"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "example-respondent",
+      "date": "2026-10-01",
+      "text": "I need a retry after the upload fails.",
+      "source": "user-supplied example"
+    }
+  ]
+}

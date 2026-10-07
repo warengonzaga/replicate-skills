@@ -1,0 +1,17 @@
+{
+  "name": "replicate-skills",
+  "owner": {
+    "name": "Waren Gonzaga",
+    "url": "https://github.com/warengonzaga"
+  },
+  "plugins": [
+    {
+      "name": "replicate-skills",
+      "source": "./",
+      "description": "Evidence-led product replication and improvement for Codex and Claude Code.",
+      "category": "productivity",
+      "homepage": "https://github.com/warengonzaga/replicate-skills"
+    }
+  ],
+  "description": "Evidence-led product replication and improvement skills for two agent clients."
+}

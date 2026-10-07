@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "criteria": [
+    {
+      "id": "booking-create",
+      "required": true,
+      "state": "unknown",
+      "evidence": [],
+      "description": "A signed-in customer creates a booking and sees it after reload."
+    }
+  ]
+}
