@@ -83,6 +83,8 @@ def sweep(root, avoid=(), domains=(), colors=(), include_replica=False, max_size
     cols = {norm_hex(c) for c in colors if HEX.fullmatch(c.strip())}
     hits = []
     root = os.path.abspath(root)
+    if not os.path.isdir(root):
+        raise ValueError("scan root is not a directory: %s" % root)
     for dirpath, dirnames, filenames in os.walk(root):
         rel_dir = os.path.relpath(dirpath, root)
         keep = []
@@ -147,6 +149,27 @@ def render(hits):
     return "\n".join(out)
 
 
+def load_criteria(args):
+    """Merge CLI criteria and a validated optional configuration file."""
+    criteria = {key: [value.strip() for value in getattr(args, key).split(",") if value.strip()]
+                for key in ("avoid", "domains", "colors")}
+    if args.config:
+        with open(args.config, encoding="utf-8") as stream:
+            config = json.load(stream)
+        if not isinstance(config, dict):
+            raise ValueError("brand configuration must be a JSON object")
+        for key in criteria:
+            values = config.get(key, [])
+            if not isinstance(values, list) or not all(isinstance(value, str) for value in values):
+                raise ValueError("%s must be a list of strings" % key)
+            criteria[key].extend(value.strip() for value in values if value.strip())
+    if not any(criteria.values()):
+        raise ValueError("nothing to look for. Pass --avoid with the original app's name.")
+    if any(not HEX.fullmatch(color) for color in criteria["colors"]):
+        raise ValueError("colors must contain three- or six-digit hex colors")
+    return criteria
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("root", nargs="?", default=".")
@@ -159,25 +182,13 @@ def main(argv=None):
                     help="also scan root .agents, .claude, and .codex configuration")
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
-    avoid = [x for x in args.avoid.split(",") if x.strip()]
-    domains = [x for x in args.domains.split(",") if x.strip()]
-    colors = [x for x in args.colors.split(",") if x.strip()]
-    if args.config:
-        try:
-            with open(args.config, encoding="utf-8") as fh:
-                cfg = json.load(fh)
-        except (OSError, ValueError) as exc:
-            print("sweep: %s" % exc, file=sys.stderr)
-            return 2
-        avoid += cfg.get("avoid", [])
-        domains += cfg.get("domains", [])
-        colors += cfg.get("colors", [])
-    if not (avoid or domains or colors):
-        print("sweep: nothing to look for. Pass --avoid with the original app's name.",
-              file=sys.stderr)
+    try:
+        criteria = load_criteria(args)
+        hits = sweep(args.root, include_replica=args.include_replica,
+                     include_agent_config=args.include_agent_config, **criteria)
+    except (OSError, ValueError) as exc:
+        print("sweep: %s" % exc, file=sys.stderr)
         return 2
-    hits = sweep(args.root, avoid, domains, colors, args.include_replica,
-                 include_agent_config=args.include_agent_config)
     print(json.dumps(hits, indent=2) if args.json else render(hits))
     return 1 if hits else 0
 

@@ -23,6 +23,7 @@ there are only warnings.
 """
 
 import argparse
+from collections import Counter
 import json
 import re
 import sys
@@ -67,9 +68,28 @@ def words(text):
     return [w for w in re.findall(r"[a-z0-9']+", (text or "").lower()) if w not in STOP]
 
 
+def validate_listing(listing, avoid=None):
+    """Check external JSON before text and keyword calculations."""
+    if not isinstance(listing, dict):
+        raise ValueError("listing must be a JSON object")
+    names = listing.get("avoid", []) if avoid is None else avoid
+    if not isinstance(names, (list, tuple)) or not all(isinstance(name, str) for name in names):
+        raise ValueError("avoid must be a list of names")
+    for store, fields in LIMITS.items():
+        if store not in listing:
+            continue
+        data = listing[store]
+        if not isinstance(data, dict):
+            raise ValueError("%s must be an object" % store)
+        for field in fields:
+            if field in data and not isinstance(data[field], str):
+                raise ValueError("%s.%s must be text" % (store, field))
+    return [name.strip() for name in names if name.strip()]
+
+
 def lint(listing, avoid=None):
     issues = []
-    avoid = [a.strip() for a in (avoid or listing.get("avoid") or []) if a.strip()]
+    avoid = validate_listing(listing, avoid)
 
     def add(level, store, field, msg):
         issues.append({"level": level, "store": store, "field": field, "message": msg})
@@ -116,7 +136,8 @@ def lint(listing, avoid=None):
             if re.search(r",\s", kw_raw):
                 add("warn", store, "keywords", "spaces after commas waste characters. "
                     "Use word1,word2,word3")
-            dupes = sorted({k for k in parts if k and parts.count(k) > 1})
+            dupes = sorted(keyword for keyword, count in Counter(parts).items()
+                           if keyword and count > 1)
             if dupes:
                 add("warn", store, "keywords", "repeated: %s" % ", ".join(dupes))
             in_name = set(words(data.get("name", "")) + words(data.get("subtitle", "")))
@@ -165,11 +186,11 @@ def main(argv=None):
     try:
         with open(args.listing, encoding="utf-8") as fh:
             listing = json.load(fh)
+        avoid = args.avoid.split(",") if args.avoid else None
+        issues = lint(listing, avoid)
     except (OSError, ValueError) as exc:
         print("listing: %s" % exc, file=sys.stderr)
         return 2
-    avoid = args.avoid.split(",") if args.avoid else None
-    issues = lint(listing, avoid)
     if args.json:
         print(json.dumps(issues, indent=2))
     else:

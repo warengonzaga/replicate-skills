@@ -74,8 +74,10 @@ def flatten(obj, prefix=""):
 
 
 def colours(tokens):
+    if not isinstance(tokens, dict):
+        raise ValueError("tokens must be a JSON object")
     src = tokens.get("color", tokens.get("colors", tokens.get("colour", {})))
-    return {k: v for k, v in flatten(src).items() if HEX.match(v)}
+    return {k: v.strip() for k, v in flatten(src).items() if HEX.fullmatch(v.strip())}
 
 
 def default_pairs(cols):
@@ -85,14 +87,18 @@ def default_pairs(cols):
 
 
 def check(cols, pairs):
+    if not isinstance(pairs, (list, tuple)):
+        raise ValueError("pairs must be a list")
     rows = []
-    for p in pairs:
-        if len(p) < 2:
-            continue
+    for index, p in enumerate(pairs, start=1):
+        if not isinstance(p, (list, tuple)) or len(p) not in (2, 3):
+            raise ValueError("pair %d must contain two token names and an optional size" % index)
+        if not all(isinstance(value, str) for value in p):
+            raise ValueError("pair %d entries must be strings" % index)
         fg, bg = p[0], p[1]
         size = p[2] if len(p) > 2 else "normal"
         if size not in NEEDS:
-            size = "normal"
+            raise ValueError("pair %d size must be normal, large, or ui" % index)
         if fg not in cols or bg not in cols:
             rows.append({"fg": fg, "bg": bg, "size": size, "error": "unknown token"})
             continue
@@ -122,28 +128,32 @@ def render(rows):
     return "\n".join(out)
 
 
+def load_input(arguments):
+    """Return token colours and explicit or inferred pairs for either CLI input mode."""
+    if len(arguments) == 2 and all(HEX.fullmatch(value.strip()) for value in arguments):
+        return {"fg": arguments[0], "bg": arguments[1]}, [["fg", "bg"]]
+    if len(arguments) != 1:
+        raise ValueError("provide one token file or two hex colours")
+    with open(arguments[0], encoding="utf-8") as stream:
+        tokens = json.load(stream)
+    cols = colours(tokens)
+    pairs = tokens["pairs"] if "pairs" in tokens else default_pairs(cols)
+    if not pairs:
+        raise ValueError('no pairs to check. Add a "pairs" list to the token file.')
+    return cols, pairs
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("args", nargs="+", help="tokens.json, or two hex colours")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
     try:
-        if len(a.args) == 2 and all(HEX.match(x) for x in a.args):
-            cols = {"fg": a.args[0], "bg": a.args[1]}
-            pairs = [["fg", "bg"]]
-        else:
-            with open(a.args[0], encoding="utf-8") as fh:
-                tokens = json.load(fh)
-            cols = colours(tokens)
-            pairs = tokens.get("pairs") or default_pairs(cols)
+        cols, pairs = load_input(a.args)
+        rows = check(cols, pairs)
     except (OSError, ValueError) as exc:
         print("contrast: %s" % exc, file=sys.stderr)
         return 2
-    if not pairs:
-        print("contrast: no pairs to check. Add a \"pairs\" list to the token file.",
-              file=sys.stderr)
-        return 2
-    rows = check(cols, pairs)
     print(json.dumps(rows, indent=2) if a.json else render(rows))
     return 1 if any("error" in r or not r["aa"] for r in rows) else 0
 

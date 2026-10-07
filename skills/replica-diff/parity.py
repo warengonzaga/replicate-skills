@@ -31,6 +31,7 @@ reported next to the feature score, and the overall score is
 import argparse
 import csv
 import json
+import math
 import sys
 
 WEIGHT = {"must": 3, "should": 2, "could": 1, "p0": 3, "p1": 2, "p2": 1}
@@ -48,14 +49,19 @@ def load(path):
         if reader.fieldnames is None:
             raise MatrixError("%s is empty" % path)
         fields = [f.strip().lower() for f in reader.fieldnames]
+        if len(set(fields)) != len(fields):
+            raise MatrixError("%s has duplicate column names" % path)
         for need in ("feature", "priority", "clone"):
             if need not in fields:
                 raise MatrixError("%s has no '%s' column. Columns needed: "
                                   "feature, area, priority, original, clone, notes"
                                   % (path, need))
+        reader.fieldnames = fields
         rows = []
         for i, raw in enumerate(reader, start=2):
-            row = {(k or "").strip().lower(): (v or "").strip() for k, v in raw.items()}
+            if None in raw:
+                raise MatrixError("%s line %d has more values than columns" % (path, i))
+            row = {key: (value or "").strip() for key, value in raw.items()}
             if not row.get("feature"):
                 continue
             row["line"] = i
@@ -128,27 +134,37 @@ def score(rows):
 
 
 def visual_scores(paths):
+    """Read bounded visual scores; malformed reports must not affect release gates."""
     scores = []
-    for p in paths:
-        with open(p, encoding="utf-8") as fh:
-            data = json.load(fh)
-        if "score" not in data:
-            raise MatrixError("%s is not imgdiff.py --json output" % p)
-        name = data.get("files", {}).get("clone", p)
-        scores.append({"file": name, "score": float(data["score"]),
+    for path in paths:
+        with open(path, encoding="utf-8") as stream:
+            data = json.load(stream)
+        if not isinstance(data, dict) or "score" not in data:
+            raise MatrixError("%s is not imgdiff.py --json output" % path)
+        raw_score = data["score"]
+        try:
+            value = float(raw_score)
+        except (TypeError, ValueError):
+            raise MatrixError("%s has a non-numeric visual score" % path)
+        if isinstance(raw_score, bool) or not math.isfinite(value) or not 0 <= value <= 100:
+            raise MatrixError("%s visual score must be finite and between 0 and 100" % path)
+        files = data.get("files", {})
+        if not isinstance(files, dict):
+            raise MatrixError("%s files must be an object" % path)
+        scores.append({"file": files.get("clone", path), "score": value,
                        "mode": data.get("mode", "layout")})
     return scores
 
 
 def combine(result, visuals):
+    """Compose a report without changing the caller's feature-only result."""
+    summary = dict(result)
+    summary["overall"] = summary["feature_score"]
     if visuals:
-        layout = sum(v["score"] for v in visuals) / len(visuals)
-        result["visual"] = visuals
-        result["layout_score"] = round(layout, 1)
-        result["overall"] = round(0.8 * result["feature_score"] + 0.2 * layout, 1)
-    else:
-        result["overall"] = result["feature_score"]
-    return result
+        layout = sum(visual["score"] for visual in visuals) / len(visuals)
+        summary.update(visual=list(visuals), layout_score=round(layout, 1),
+                       overall=round(0.8 * summary["feature_score"] + 0.2 * layout, 1))
+    return summary
 
 
 def render(result, markdown=False):
@@ -213,6 +229,9 @@ def main(argv=None):
                     help="exit 1 for incomplete must-haves, invalid rows, or an empty scored matrix")
     args = ap.parse_args(argv)
     try:
+        if args.fail_under is not None and (not math.isfinite(args.fail_under)
+                                           or not 0 <= args.fail_under <= 100):
+            raise MatrixError("score threshold must be finite and between 0 and 100")
         result = combine(score(load(args.matrix)), visual_scores(args.visual))
     except (MatrixError, OSError, ValueError) as exc:
         print("parity: %s" % exc, file=sys.stderr)

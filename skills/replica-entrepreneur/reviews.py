@@ -50,14 +50,32 @@ class FeedbackError(Exception):
 def load_themes(path=DEFAULT_THEMES):
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
+    if not isinstance(data, dict) or not isinstance(data.get("themes", []), list):
+        raise FeedbackError("theme configuration must be an object with a themes list")
     themes = []
+    seen = set()
     for t in data.get("themes", []):
+        if not isinstance(t, dict) or not isinstance(t.get("id"), str) or not t["id"].strip():
+            raise FeedbackError("each theme must have a nonempty string id")
+        if t["id"] in seen:
+            raise FeedbackError("duplicate theme id: " + t["id"])
+        seen.add(t["id"])
+        if not isinstance(t.get("label", t["id"]), str):
+            raise FeedbackError("theme labels must be strings")
+        if t.get("kind", "complaint") not in ("complaint", "request"):
+            raise FeedbackError("theme kind must be complaint or request")
+        if not isinstance(t.get("patterns", []), list) or not all(
+                isinstance(pattern, str) for pattern in t.get("patterns", [])):
+            raise FeedbackError("theme patterns must be a list of strings")
         themes.append({
             "id": t["id"], "label": t.get("label", t["id"]),
             "kind": t.get("kind", "complaint"),
             "patterns": [re.compile(p, re.I) for p in t.get("patterns", [])],
         })
-    requests = [re.compile(p, re.I) for p in data.get("request_patterns", [])]
+    patterns = data.get("request_patterns", [])
+    if not isinstance(patterns, list) or not all(isinstance(pattern, str) for pattern in patterns):
+        raise FeedbackError("request_patterns must be a list of strings")
+    requests = [re.compile(pattern, re.I) for pattern in patterns]
     return themes, requests
 
 
@@ -91,6 +109,9 @@ def load_reviews(path):
         if reader.fieldnames is None:
             raise FeedbackError("%s is empty" % path)
         cols = [c.strip().lower() for c in reader.fieldnames]
+        if len(set(cols)) != len(cols):
+            raise FeedbackError("%s has duplicate column names" % path)
+        reader.fieldnames = cols
         for need in ("url", "text"):
             if need not in cols:
                 raise FeedbackError(
@@ -99,7 +120,9 @@ def load_reviews(path):
         kept, dropped, dupes = [], 0, 0
         seen = set()
         for i, raw in enumerate(reader, start=2):
-            row = {(k or "").strip().lower(): (v or "").strip() for k, v in raw.items()}
+            if None in raw:
+                raise FeedbackError("%s line %d has more values than columns" % (path, i))
+            row = {key: (value or "").strip() for key, value in raw.items()}
             url, text = row.get("url", ""), row.get("text", "")
             if not url or not text or not re.match(r"^https?://", url):
                 dropped += 1
@@ -281,6 +304,9 @@ def main(argv=None):
     ap.add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
     try:
+        if args.months <= 0:
+            raise FeedbackError("months must be positive")
+        today = _dt.date.fromisoformat(args.today) if args.today else None
         themes, req = load_themes(args.themes)
         reviews, dropped, dupes = load_reviews(args.reviews)
     except (FeedbackError, OSError, ValueError, KeyError, re.error) as exc:
@@ -290,7 +316,6 @@ def main(argv=None):
         print("reviews: no usable rows. Every row needs a url (http...) and the "
               "review text.", file=sys.stderr)
         return 2
-    today = parse_date(args.today) if args.today else None
     result = analyse(reviews, themes, req, today=today, months=args.months)
     result["dropped"] = dropped
     result["duplicates"] = dupes
@@ -299,8 +324,12 @@ def main(argv=None):
         return 0
     text = render(result, dropped, dupes)
     if args.out:
-        with open(args.out, "w", encoding="utf-8") as fh:
-            fh.write(text)
+        try:
+            with open(args.out, "w", encoding="utf-8") as fh:
+                fh.write(text)
+        except OSError as exc:
+            print("reviews: %s" % exc, file=sys.stderr)
+            return 2
         print("wrote %s" % args.out)
     else:
         sys.stdout.write(text)

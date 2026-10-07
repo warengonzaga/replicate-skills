@@ -429,18 +429,25 @@ def main(argv=None):
                     help="exit 1 when the score is below this")
     args = ap.parse_args(argv)
     try:
+        if args.fail_under is not None and (not math.isfinite(args.fail_under)
+                                           or not 0 <= args.fail_under <= 100):
+            raise PngError("score threshold must be finite and between 0 and 100")
+        if args.width <= 0 or args.cols <= 0:
+            raise PngError("width and grid columns must be positive")
+        if not 0 <= args.tolerance <= 255:
+            raise PngError("pixel tolerance must be between 0 and 255")
         a = read_png(args.original)
         b = read_png(args.clone)
+        report, diff = compare(a, b, mode=args.mode, width=args.width, cols=args.cols,
+                               tolerance=args.tolerance)
+        report["files"] = {"original": args.original, "clone": args.clone}
+        if args.out:
+            write_png(args.out, report["compared_at"]["width"],
+                      report["compared_at"]["height"], diff)
+            report["diff_image"] = args.out
     except (PngError, OSError, zlib.error) as exc:
         print("imgdiff: %s" % exc, file=sys.stderr)
         return 2
-    report, diff = compare(a, b, mode=args.mode, width=args.width, cols=args.cols,
-                           tolerance=args.tolerance)
-    report["files"] = {"original": args.original, "clone": args.clone}
-    if args.out:
-        write_png(args.out, report["compared_at"]["width"],
-                  report["compared_at"]["height"], diff)
-        report["diff_image"] = args.out
     if args.json:
         print(json.dumps(report, indent=2))
     else:
