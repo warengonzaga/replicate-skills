@@ -8,8 +8,8 @@ Replicate Skills combines [Jake Schincariol's Claude Code Replica skills](https:
 and the [OpenAI Replica adaptation by Jayesh01323](https://github.com/Jayesh01323/replica-skill-openai)
 as a revised pack with additional improvements and enhancements. The original
 supplies our MIT-licensed implementation foundation; the OpenAI adaptation informed
-the packaging approach. See [NOTICE.md](NOTICE.md) for credits and
-[UPSTREAM.md](UPSTREAM.md) for exact source provenance.
+the packaging approach; no separate code was imported from the OpenAI adaptation.
+See [CONTRIBUTING.md](CONTRIBUTING.md#source-history) for source commits and revision details.
 
 ## Install
 
@@ -126,7 +126,7 @@ accounts, credentials, browser sessions, or guaranteed store approval.
 
 This project directly adapts MIT-licensed work with attribution to both source
 projects. Refactoring and rewriting do not remove the source lineage or required
-copyright notices. LICENSE and NOTICE.md are included in copied skill installs.
+copyright notices. LICENSE and this README are included in copied skill installs.
 
 MIT license. Original copyright: Jake Schincariol, 2026. Downstream contributions:
 Waren Gonzaga and contributors. See [LICENSE](LICENSE).

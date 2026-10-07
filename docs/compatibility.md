@@ -34,7 +34,7 @@ Observed on 2026-10-07:
   that root CLAUDE.md is not plugin context; that file is for repository contributors.
 - Python 3.12.14: all 88 helper/installer regression tests and structural validation
   passed, including malformed input and output-error cases.
-- Both runtime installers copy LICENSE and NOTICE.md into all eleven skills.
+- Both runtime installers copy LICENSE and README.md into all eleven skills.
 
 Trigger selection and end-to-end agent behavior remain manual checks in
 [the evaluation scenarios](evaluation.md). No model-driven app build, live browser
@@ -52,7 +52,7 @@ blocked check, not permission to fabricate a result.
 
 The Claude Code workflow foundation comes from Jakeschincariol/replica-skill.
 The OpenAI packaging approach was informed by Jayesh01323/replica-skill-openai.
-Both are credited in [NOTICE.md](../NOTICE.md). Exact commits and the distinction
+Both are credited in [README.md](../README.md). Exact commits and the distinction
 between the implementation import and packaging reference are recorded in
-[UPSTREAM.md](../UPSTREAM.md). Both native manifests load the same revised skill
+[CONTRIBUTING.md](../CONTRIBUTING.md#source-history). Both native manifests load the same revised skill
 folders, and all six helpers have documented refactors and regression coverage.

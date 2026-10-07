@@ -9,7 +9,7 @@ and the project artifact directory `replica/` are intentionally stable.
 
 ## Clean contribution workflow
 
-1. Read this file, CONTRIBUTING.md, UPSTREAM.md, and the affected skills before editing.
+1. Read this file, CONTRIBUTING.md, and the affected skills before editing.
 2. Inspect `git status`. Preserve unrelated changes and work on a descriptive
    branch (`feature/`, `fix/`, or `docs/`) based on `dev`. Never implement
    directly on `main` or `dev`. Feature PRs target `dev` and use squash merges;

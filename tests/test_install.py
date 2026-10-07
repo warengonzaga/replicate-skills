@@ -32,8 +32,8 @@ class Installer(unittest.TestCase):
         self.install()
         self.assertEqual((self.destination / 'replica-diff/LICENSE').read_bytes(),
                          (Path(ROOT) / 'LICENSE').read_bytes())
-        self.assertEqual((self.destination / 'replica-diff/NOTICE.md').read_bytes(),
-                         (Path(ROOT) / 'NOTICE.md').read_bytes())
+        self.assertEqual((self.destination / 'replica-diff/README.md').read_bytes(),
+                         (Path(ROOT) / 'README.md').read_bytes())
 
     def test_conflict_preserves_user_files(self):
         self.install()

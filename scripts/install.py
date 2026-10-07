@@ -29,7 +29,7 @@ def install(source, destination, names, replace=False, dry_run=False):
         raise ValueError('Existing skills: %s. Use --replace to back them up first.' %
                          ', '.join(p.name for p in conflicts))
     license_path = source.parent / 'LICENSE'
-    notice_path = source.parent / 'NOTICE.md'
+    readme_path = source.parent / 'README.md'
     if not license_path.is_file():
         raise ValueError('Source pack must include its LICENSE.')
     for name in names:
@@ -52,8 +52,8 @@ def install(source, destination, names, replace=False, dry_run=False):
             shutil.copytree(str(source / name), str(staging / name),
                             ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
             shutil.copy2(str(license_path), str(staging / name / 'LICENSE'))
-            if notice_path.is_file():
-                shutil.copy2(str(notice_path), str(staging / name / 'NOTICE.md'))
+            if readme_path.is_file():
+                shutil.copy2(str(readme_path), str(staging / name / 'README.md'))
         destination.mkdir(exist_ok=True)
         try:
             for target in targets:
